@@ -95,8 +95,6 @@ const AddCarPage = ({ navigation, route }) => {
   );
 };
 
-export default AddCarPage;
-
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#000',
@@ -198,3 +196,5 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 });
+
+export default AddCarPage;

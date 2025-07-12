@@ -9,28 +9,40 @@ PODS:
     - GoogleUtilities/Environment (~> 7.7)
     - nanopb (< 2.30911.0, >= 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleMLKit/MLKitCore (6.0.0):
-    - MLKitCommon (~> 11.0.0)
-  - GoogleMLKit/TextRecognition (6.0.0):
+  - GoogleMLKit/MLKitCore (5.0.0):
+    - MLKitCommon (~> 10.0.0)
+  - GoogleMLKit/TextRecognition (5.0.0):
     - GoogleMLKit/MLKitCore
-    - MLKitTextRecognition (~> 4.0.0)
-  - GoogleMLKit/TextRecognitionChinese (6.0.0):
+    - MLKitTextRecognition (~> 3.0.0)
+  - GoogleMLKit/TextRecognitionChinese (5.0.0):
     - GoogleMLKit/MLKitCore
-    - MLKitTextRecognitionChinese (~> 3.0.0)
-  - GoogleMLKit/TextRecognitionDevanagari (6.0.0):
+    - MLKitTextRecognitionChinese (~> 2.0.0)
+  - GoogleMLKit/TextRecognitionDevanagari (5.0.0):
     - GoogleMLKit/MLKitCore
-    - MLKitTextRecognitionDevanagari (~> 3.0.0)
-  - GoogleMLKit/TextRecognitionJapanese (6.0.0):
+    - MLKitTextRecognitionDevanagari (~> 2.0.0)
+  - GoogleMLKit/TextRecognitionJapanese (5.0.0):
     - GoogleMLKit/MLKitCore
-    - MLKitTextRecognitionJapanese (~> 3.0.0)
-  - GoogleMLKit/TextRecognitionKorean (6.0.0):
+    - MLKitTextRecognitionJapanese (~> 2.0.0)
+  - GoogleMLKit/TextRecognitionKorean (5.0.0):
     - GoogleMLKit/MLKitCore
-    - MLKitTextRecognitionKorean (~> 3.0.0)
-  - GoogleToolboxForMac/Defines (4.2.1)
-  - GoogleToolboxForMac/Logger (4.2.1):
-    - GoogleToolboxForMac/Defines (= 4.2.1)
-  - "GoogleToolboxForMac/NSData+zlib (4.2.1)":
-    - GoogleToolboxForMac/Defines (= 4.2.1)
+    - MLKitTextRecognitionKorean (~> 2.0.0)
+  - GoogleMLKit/Translate (5.0.0):
+    - GoogleMLKit/MLKitCore
+    - MLKitTranslate (~> 4.0.0)
+  - GoogleToolboxForMac/DebugUtils (2.3.2):
+    - GoogleToolboxForMac/Defines (= 2.3.2)
+  - GoogleToolboxForMac/Defines (2.3.2)
+  - GoogleToolboxForMac/Logger (2.3.2):
+    - GoogleToolboxForMac/Defines (= 2.3.2)
+  - "GoogleToolboxForMac/NSData+zlib (2.3.2)":
+    - GoogleToolboxForMac/Defines (= 2.3.2)
+  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.3.2)":
+    - GoogleToolboxForMac/DebugUtils (= 2.3.2)
+    - GoogleToolboxForMac/Defines (= 2.3.2)
+    - "GoogleToolboxForMac/NSString+URLArguments (= 2.3.2)"
+  - "GoogleToolboxForMac/NSString+URLArguments (2.3.2)"
+  - GoogleToolboxForMac/StringEncoding (2.3.2):
+    - GoogleToolboxForMac/Defines (= 2.3.2)
   - GoogleUtilities/Environment (7.13.3):
     - GoogleUtilities/Privacy
     - PromisesObjC (< 3.0, >= 1.2)
@@ -48,42 +60,53 @@ PODS:
     - hermes-engine/Pre-built (= 0.80.0)
   - hermes-engine/Pre-built (0.80.0)
   - MLImage (1.0.0-beta5)
-  - MLKitCommon (11.0.0):
-    - GoogleDataTransport (< 10.0, >= 9.4.1)
-    - GoogleToolboxForMac/Logger (< 5.0, >= 4.2.1)
-    - "GoogleToolboxForMac/NSData+zlib (< 5.0, >= 4.2.1)"
-    - GoogleUtilities/UserDefaults (< 8.0, >= 7.13.0)
+  - MLKitCommon (10.0.0):
+    - GoogleDataTransport (~> 9.0)
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+    - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
+    - GoogleUtilities/UserDefaults (~> 7.0)
     - GoogleUtilitiesComponents (~> 1.0)
-    - GTMSessionFetcher/Core (< 4.0, >= 3.3.2)
-  - MLKitTextRecognition (4.0.0):
-    - MLKitCommon (~> 11.0)
-    - MLKitTextRecognitionCommon (= 3.0.0)
-    - MLKitVision (~> 7.0)
-  - MLKitTextRecognitionChinese (3.0.0):
-    - MLKitCommon (~> 11.0)
-    - MLKitTextRecognitionCommon (= 3.0.0)
-    - MLKitVision (~> 7.0)
-  - MLKitTextRecognitionCommon (3.0.0):
-    - MLKitCommon (~> 11.0)
-    - MLKitVision (~> 7.0)
-  - MLKitTextRecognitionDevanagari (3.0.0):
-    - MLKitCommon (~> 11.0)
-    - MLKitTextRecognitionCommon (= 3.0.0)
-    - MLKitVision (~> 7.0)
-  - MLKitTextRecognitionJapanese (3.0.0):
-    - MLKitCommon (~> 11.0)
-    - MLKitTextRecognitionCommon (= 3.0.0)
-    - MLKitVision (~> 7.0)
-  - MLKitTextRecognitionKorean (3.0.0):
-    - MLKitCommon (~> 11.0)
-    - MLKitTextRecognitionCommon (= 3.0.0)
-    - MLKitVision (~> 7.0)
-  - MLKitVision (7.0.0):
-    - GoogleToolboxForMac/Logger (< 5.0, >= 4.2.1)
-    - "GoogleToolboxForMac/NSData+zlib (< 5.0, >= 4.2.1)"
-    - GTMSessionFetcher/Core (< 4.0, >= 3.3.2)
+    - GTMSessionFetcher/Core (< 4.0, >= 1.1)
+  - MLKitNaturalLanguage (6.0.0):
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+    - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
+    - GoogleToolboxForMac/StringEncoding (~> 2.1)
+    - GTMSessionFetcher/Core (< 4.0, >= 1.1)
+    - MLKitCommon (~> 10.0)
+  - MLKitTextRecognition (3.0.0):
+    - MLKitCommon (~> 10.0)
+    - MLKitTextRecognitionCommon (= 2.0.0)
+    - MLKitVision (~> 6.0)
+  - MLKitTextRecognitionChinese (2.0.0):
+    - MLKitCommon (~> 10.0)
+    - MLKitTextRecognitionCommon (= 2.0.0)
+    - MLKitVision (~> 6.0)
+  - MLKitTextRecognitionCommon (2.0.0):
+    - MLKitCommon (~> 10.0)
+    - MLKitVision (~> 6.0)
+  - MLKitTextRecognitionDevanagari (2.0.0):
+    - MLKitCommon (~> 10.0)
+    - MLKitTextRecognitionCommon (= 2.0.0)
+    - MLKitVision (~> 6.0)
+  - MLKitTextRecognitionJapanese (2.0.0):
+    - MLKitCommon (~> 10.0)
+    - MLKitTextRecognitionCommon (= 2.0.0)
+    - MLKitVision (~> 6.0)
+  - MLKitTextRecognitionKorean (2.0.0):
+    - MLKitCommon (~> 10.0)
+    - MLKitTextRecognitionCommon (= 2.0.0)
+    - MLKitVision (~> 6.0)
+  - MLKitTranslate (4.0.0):
+    - MLKitNaturalLanguage (~> 6.0)
+    - SSZipArchive (< 3.0, >= 2.2.3)
+  - MLKitVision (6.0.0):
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+    - GTMSessionFetcher/Core (< 4.0, >= 1.1)
     - MLImage (= 1.0.0-beta5)
-    - MLKitCommon (~> 11.0)
+    - MLKitCommon (~> 10.0)
   - nanopb (2.30910.0):
     - nanopb/decode (= 2.30910.0)
     - nanopb/encode (= 2.30910.0)
@@ -1730,6 +1753,37 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - SocketRocket
+  - react-native-fast-tflite (1.6.1):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - TensorFlowLiteC (= 2.17.0)
+    - TensorFlowLiteC/CoreML (= 2.17.0)
+    - Yoga
   - react-native-safe-area-context (5.5.1):
     - boost
     - DoubleConversion
@@ -2352,13 +2406,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNMLKitTextRecognition (1.5.2):
-    - GoogleMLKit/TextRecognition (= 6.0.0)
-    - GoogleMLKit/TextRecognitionChinese (= 6.0.0)
-    - GoogleMLKit/TextRecognitionDevanagari (= 6.0.0)
-    - GoogleMLKit/TextRecognitionJapanese (= 6.0.0)
-    - GoogleMLKit/TextRecognitionKorean (= 6.0.0)
-    - React
   - RNReanimated (3.18.0):
     - boost
     - DoubleConversion
@@ -2658,6 +2705,42 @@ PODS:
     - SocketRocket
     - Yoga
   - SocketRocket (0.7.1)
+  - SSZipArchive (2.4.3)
+  - TensorFlowLiteC (2.17.0):
+    - TensorFlowLiteC/Core (= 2.17.0)
+  - TensorFlowLiteC/Core (2.17.0)
+  - TensorFlowLiteC/CoreML (2.17.0):
+    - TensorFlowLiteC/Core
+  - vision-camera-resize-plugin (3.2.0):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - VisionCamera
+    - Yoga
   - VisionCamera (4.7.0):
     - VisionCamera/Core (= 4.7.0)
     - VisionCamera/FrameProcessors (= 4.7.0)
@@ -2670,6 +2753,44 @@ PODS:
   - VisionCamera/React (4.7.0):
     - React-Core
     - VisionCamera/FrameProcessors
+  - VisionCameraCropper (1.3.1):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
+  - VisionCameraTextRecognition (3.1.1):
+    - GoogleMLKit/TextRecognition
+    - GoogleMLKit/TextRecognitionChinese
+    - GoogleMLKit/TextRecognitionDevanagari
+    - GoogleMLKit/TextRecognitionJapanese
+    - GoogleMLKit/TextRecognitionKorean
+    - GoogleMLKit/Translate
+    - React-Core
+    - VisionCamera
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -2714,6 +2835,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
+  - react-native-fast-tflite (from `../node_modules/react-native-fast-tflite`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-worklets-core (from `../node_modules/react-native-worklets-core`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -2748,13 +2870,15 @@ DEPENDENCIES:
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
-  - "RNMLKitTextRecognition (from `../node_modules/@react-native-ml-kit/text-recognition`)"
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - SocketRocket (~> 0.7.1)
+  - vision-camera-resize-plugin (from `../node_modules/vision-camera-resize-plugin`)
   - VisionCamera (from `../node_modules/react-native-vision-camera`)
+  - VisionCameraCropper (from `../node_modules/vision-camera-cropper`)
+  - VisionCameraTextRecognition (from `../node_modules/react-native-vision-camera-text-recognition`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -2767,16 +2891,20 @@ SPEC REPOS:
     - GTMSessionFetcher
     - MLImage
     - MLKitCommon
+    - MLKitNaturalLanguage
     - MLKitTextRecognition
     - MLKitTextRecognitionChinese
     - MLKitTextRecognitionCommon
     - MLKitTextRecognitionDevanagari
     - MLKitTextRecognitionJapanese
     - MLKitTextRecognitionKorean
+    - MLKitTranslate
     - MLKitVision
     - nanopb
     - PromisesObjC
     - SocketRocket
+    - SSZipArchive
+    - TensorFlowLiteC
 
 EXTERNAL SOURCES:
   boost:
@@ -2860,6 +2988,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   React-microtasksnativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
+  react-native-fast-tflite:
+    :path: "../node_modules/react-native-fast-tflite"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-worklets-core:
@@ -2928,8 +3058,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
-  RNMLKitTextRecognition:
-    :path: "../node_modules/@react-native-ml-kit/text-recognition"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -2938,8 +3066,14 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-svg"
   RNVectorIcons:
     :path: "../node_modules/react-native-vector-icons"
+  vision-camera-resize-plugin:
+    :path: "../node_modules/vision-camera-resize-plugin"
   VisionCamera:
     :path: "../node_modules/react-native-vision-camera"
+  VisionCameraCropper:
+    :path: "../node_modules/vision-camera-cropper"
+  VisionCameraTextRecognition:
+    :path: "../node_modules/react-native-vision-camera-text-recognition"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -2951,21 +3085,23 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
-  GoogleMLKit: 97ac7af399057e99182ee8edfa8249e3226a4065
-  GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
+  GoogleMLKit: 90ba06e028795a50261f29500d238d6061538711
+  GoogleToolboxForMac: 8bef7c7c5cf7291c687cf5354f39f9db6399ad34
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   hermes-engine: 7068e976238b29e97b3bafd09a994542af7d5c0b
   MLImage: 1824212150da33ef225fbd3dc49f184cf611046c
-  MLKitCommon: afec63980417d29ffbb4790529a1b0a2291699e1
-  MLKitTextRecognition: c83c18ad25496f2077f6ec93c5940487ff2eb343
-  MLKitTextRecognitionChinese: 09d6e22bbc2f1687573473ebb6e470af11c65e7a
-  MLKitTextRecognitionCommon: c0b3a63d529296a19bce1f8bc8a513644ed4d1f6
-  MLKitTextRecognitionDevanagari: abd49431a28e385eaa98edcc2da9664e1eb05b51
-  MLKitTextRecognitionJapanese: f59521572316562030b20cc98b8e635fc282a172
-  MLKitTextRecognitionKorean: 4877b6a8d95cd8846586e83f85b2f3e9ac93a737
-  MLKitVision: e858c5f125ecc288e4a31127928301eaba9ae0c1
+  MLKitCommon: afcd11b6c0735066a0dde8b4bf2331f6197cbca2
+  MLKitNaturalLanguage: b9a77b1811edf35bfba52ec1ce2c25a463aa45e0
+  MLKitTextRecognition: 91706574e4db9b48cd2e66cbbcc6b58956156b0a
+  MLKitTextRecognitionChinese: 19d3a70799f17cf2115b6381964b87e874d96dcd
+  MLKitTextRecognitionCommon: 3bd8375160d21dc9f9cc512d1fab2530ecc43dde
+  MLKitTextRecognitionDevanagari: 9c689b259f6654fdaa1004a769dcec55b257a02a
+  MLKitTextRecognitionJapanese: 9afa94ad6d622a69c2043def562fffa9be8d269d
+  MLKitTextRecognitionKorean: 4b37d1a034af61bf9699d791ae8bcf04cb1e97b7
+  MLKitTranslate: 52e52e7c4800e853c274711c9034306b80abba88
+  MLKitVision: 90922bca854014a856f8b649d1f1f04f63fd9c79
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   RCT-Folly: 846fda9475e61ec7bcbf8a3fe81edfcaeb090669
@@ -3001,6 +3137,7 @@ SPEC CHECKSUMS:
   React-logger: dce52a571ba0e0149c3f0fcc6866cbc0c8552c5e
   React-Mapbuffer: f5754c33877eaf36e4c76c613b35615a181c85c5
   React-microtasksnativemodule: 23df6374a3ac422d8c2927839bcaeed61fee3dad
+  react-native-fast-tflite: 600186d3c0dd1af4616853a5e21c33c08deca849
   react-native-safe-area-context: d3738f0c3b1fcefaed874a45891b0d44306c47c1
   react-native-worklets-core: c1a83f37841a337b55a7fcdc9729f3054abcf5f9
   React-NativeModulesApple: e16d5c133019987285f001fbf1461a861e40426f
@@ -3035,15 +3172,19 @@ SPEC CHECKSUMS:
   ReactCodegen: 5d41e1df061200130dd326e55cdfdf94b0289c6e
   ReactCommon: b028d09a66e60ebd83ca59d8cc9a1216360db147
   RNGestureHandler: 5e1a1605659c22098719fc2e8aee453fe728f52e
-  RNMLKitTextRecognition: ff4ec181537d3ec3bd53f48038ed3d0c381ff66a
   RNReanimated: bc1ddb7a5352648bcf0d592256069833bf935a46
   RNScreens: ee2abe7e0c548eed14e92742e81ed991165c56aa
   RNSVG: 341f555dbcd83a34d1f058e88df387de7bbc3347
   RNVectorIcons: ef9b4b0b786053ebdd63ee2972f48de9633ba166
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
+  SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
+  TensorFlowLiteC: eac6d689a8d391d1b202dc59e3d9165ba64aaf73
+  vision-camera-resize-plugin: 20527f42d3cf7aa1a3685fdcc3f1e357d773a484
   VisionCamera: 1470a7fa013e22de7481640a4d9c597ad6f13919
+  VisionCameraCropper: f02ffab4fa619654bbc7d2ed78be18780c7f2825
+  VisionCameraTextRecognition: d183547eed78b904622eac9e6860d0690a0c3f0c
   Yoga: 0c4b7d2aacc910a1f702694fa86be830386f4ceb
 
-PODFILE CHECKSUM: 7348c89f35a7b87aa6795278f3f9e63016362e0d
+PODFILE CHECKSUM: 9a51a6a977c34fbff2bb4ea4c1fffa0b89972c6b
 
 COCOAPODS: 1.16.2

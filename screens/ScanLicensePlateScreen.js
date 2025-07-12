@@ -8,10 +8,13 @@ import {
   Alert,
   Dimensions,
 } from 'react-native';
-import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
+import { Camera, useCameraDevice, useCameraPermission, useFrameProcessor, runAtTargetFps } from 'react-native-vision-camera';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { Linking } from 'react-native';
-import TextRecognition from '@react-native-ml-kit/text-recognition';
+import { useTensorflowModel } from 'react-native-fast-tflite';
+import { useResizePlugin } from 'vision-camera-resize-plugin';
+import { useTextRecognition, PhotoRecognizer } from 'react-native-vision-camera-text-recognition';
+import { runOnJS } from 'react-native-reanimated';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -22,6 +25,16 @@ const ScanLicensePlateScreen = () => {
   const { hasPermission, requestPermission } = useCameraPermission();
   const device = useCameraDevice('back');
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Load YOLOv9 TFLite model
+  const objectDetection = useTensorflowModel(require('../assets/anpr2_yolov9_int8.tflite'));
+  const model = objectDetection.state === 'loaded' ? objectDetection.model : null;
+
+  // Initialize resize plugin
+  const { resize } = useResizePlugin();
+
+  // Initialize text recognition
+  const { scanText } = useTextRecognition({ language: 'latin' });
 
   useEffect(() => {
     if (!hasPermission) {
@@ -40,24 +53,132 @@ const ScanLicensePlateScreen = () => {
     }
   }, [hasPermission]);
 
+  const processLicensePlate = (licensePlateText) => {
+    if (licensePlateText) {
+      const cleanedText = licensePlateText.trim().replace(/\s+/g, '');
+      navigation.navigate('AddCar', { licensePlate: cleanedText });
+    } else {
+      Alert.alert('No Text Found', 'Could not detect a license plate. Please try again.');
+    }
+    setIsProcessing(false);
+  };
+
+  const frameProcessor = useFrameProcessor(
+    (frame) => {
+      'worklet';
+      runAtTargetFps(2, () => {
+        'worklet';
+        if (model == null || isProcessing) return;
+
+        // Resize frame to 640x640 for YOLOv9 model
+        const resized = resize(frame, {
+          scale: {
+            width: 640,
+            height: 640,
+          },
+          pixelFormat: 'rgb',
+          dataType: 'uint8',
+        });
+
+        // Convert uint8 to float32
+        const inputArray = new Float32Array(resized.length);
+        for (let i = 0; i < resized.length; i++) {
+          inputArray[i] = resized[i] / 255.0; // Normalize to [0,1]
+        }
+
+        // Run YOLOv9 model
+        const outputs = model.runSync([inputArray]);
+
+        // Process outputs: [1, 5, 8400] -> [x, y, w, h, confidence] for each detection
+        const output = outputs[0]; // Shape: [1, 5, 8400]
+        let maxConfidence = 0;
+        let bestBox = null;
+
+        for (let i = 0; i < 8400; i++) {
+          const confidence = output[4 * 8400 + i]; // Confidence score
+          if (confidence > maxConfidence && confidence > 0.5) {
+            maxConfidence = confidence;
+            const x = output[0 * 8400 + i]; // Center x
+            const y = output[1 * 8400 + i]; // Center y
+            const w = output[2 * 8400 + i]; // Width
+            const h = output[3 * 8400 + i]; // Height
+            bestBox = [x - w / 2, y - h / 2, x + w / 2, y + h / 2]; // Convert to [x1, y1, x2, y2]
+          }
+        }
+
+        if (bestBox) {
+          const [x1, y1, x2, y2] = bestBox;
+
+          // Calculate crop coordinates (scale back to original frame dimensions)
+          const frameWidth = frame.width;
+          const frameHeight = frame.height;
+          const scaleX = frameWidth / 640;
+          const scaleY = frameHeight / 640;
+
+          const cropX = Math.max(0, x1 * scaleX);
+          const cropY = Math.max(0, y1 * scaleY);
+          const cropWidth = Math.min(frameWidth - cropX, (x2 - x1) * scaleX);
+          const cropHeight = Math.min(frameHeight - cropY, (y2 - y1) * scaleY);
+
+          // Perform OCR on full frame and filter text within bounding box
+          const result = scanText(frame);
+          let detectedText = '';
+          for (const block of result.result.blocks) {
+            const { x, y, width, height } = block.frame;
+            // Check if text block is within the detected bounding box
+            if (
+              x >= cropX &&
+              y >= cropY &&
+              x + width <= cropX + cropWidth &&
+              y + height <= cropY + cropHeight
+            ) {
+              detectedText += block.text + ' ';
+            }
+          }
+
+          // Alternative: Use vision-camera-cropper to crop and OCR (uncomment if installed)
+          /*
+          const croppedPath = crop(frame, {
+            cropRegion: {
+              left: cropX,
+              top: cropY,
+              width: cropWidth,
+              height: cropHeight,
+            },
+          });
+          const ocrResult = runOnJS(PhotoRecognizer)({ uri: croppedPath, orientation: 'portrait' });
+          runOnJS(processLicensePlate)(ocrResult.text);
+          */
+
+          runOnJS(processLicensePlate)(detectedText);
+        }
+      });
+    },
+    [model, isProcessing]
+  );
+
   const capturePhoto = async () => {
     if (camera.current && !isProcessing) {
       setIsProcessing(true);
       try {
-        const photo = await camera.current.takePhoto();
-        const imagePath = `file://${photo.path}`;
-        const result = await TextRecognition.recognize(imagePath);
-        const licensePlateText = result.text.trim().replace(/\s+/g, '');
+        // Capture photo with explicit options
+        const photo = await camera.current.takePhoto({
+          flash: 'off',
+          enableShutterSound: false,
+        });
+        console.log('Photo captured:', photo);
 
-        if (licensePlateText) {
-          navigation.navigate('AddCar', { licensePlate: licensePlateText });
-        } else {
-          Alert.alert('No Text Found', 'Could not detect a license plate. Please try again.');
-        }
+        // Ensure the path is valid
+        const imagePath = photo.path.startsWith('file://') ? photo.path : `file://${photo.path}`;
+        console.log('Image path for OCR:', imagePath);
+
+        // Perform OCR
+        const result = await PhotoRecognizer({ uri: imagePath, orientation: 'portrait' });
+        console.log('OCR result:', result);
+        processLicensePlate(result.text);
       } catch (error) {
         console.error('Error capturing or processing photo:', error);
-        Alert.alert('Error', 'Failed to process the image. Please try again.');
-      } finally {
+        Alert.alert('Error', `Failed to process the photo: ${error.message}. Please try again.`);
         setIsProcessing(false);
       }
     }
@@ -96,6 +217,7 @@ const ScanLicensePlateScreen = () => {
         device={device}
         isActive={isFocused}
         photo={true}
+        frameProcessor={frameProcessor}
         onInitialized={() => console.log('Camera initialized')}
         onError={(error) => {
           console.error('Camera error:', error);
@@ -192,7 +314,7 @@ const styles = StyleSheet.create({
   },
   bottomTitle: {
     color: '#fff',
-    fontSize: 40, // Increased size
+    fontSize: 40,
     fontWeight: 'bold',
     marginBottom: 6,
   },
