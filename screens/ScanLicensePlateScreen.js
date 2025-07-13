@@ -7,11 +7,11 @@ import {
   ActivityIndicator,
   Alert,
   Dimensions,
+  Linking,
 } from 'react-native';
 import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
-import { Linking } from 'react-native';
-import TextRecognition from '@react-native-ml-kit/text-recognition';
+import axios from 'axios';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -45,18 +45,35 @@ const ScanLicensePlateScreen = () => {
       setIsProcessing(true);
       try {
         const photo = await camera.current.takePhoto();
-        const imagePath = `file://${photo.path}`;
-        const result = await TextRecognition.recognize(imagePath);
-        const licensePlateText = result.text.trim().replace(/\s+/g, '');
 
-        if (licensePlateText) {
-          navigation.navigate('AddCar', { licensePlate: licensePlateText });
+        const formData = new FormData();
+        formData.append('file', {
+          uri: `file://${photo.path}`,
+          name: 'plate.jpg',
+          type: 'image/jpeg',
+        });
+
+        const response = await axios.post(
+         'http://192.168.150.239:5000/recognize', 
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+
+        const { plate } = response.data;
+        console.log('Recognized Plate:', plate);
+
+        if (plate && plate !== 'UNKNOWN') {
+          navigation.navigate('AddCar', { licensePlate: plate });
         } else {
-          Alert.alert('No Text Found', 'Could not detect a license plate. Please try again.');
+          Alert.alert('No Plate Found', 'Try again with better focus or lighting.');
         }
       } catch (error) {
-        console.error('Error capturing or processing photo:', error);
-        Alert.alert('Error', 'Failed to process the image. Please try again.');
+        console.error('Error uploading photo:', error);
+        Alert.alert('Error', 'Failed to process the image.');
       } finally {
         setIsProcessing(false);
       }
@@ -113,7 +130,7 @@ const ScanLicensePlateScreen = () => {
       <View style={styles.bottomContainer}>
         <View style={styles.textWrapper}>
           <Text style={styles.bottomTitle}>Scan License Plate</Text>
-          <Text style={styles.bottomSubtitle}>Position License Plate in frame</Text>
+          <Text style={styles.bottomSubtitle}>Position license plate in frame</Text>
         </View>
 
         <TouchableOpacity
@@ -192,7 +209,7 @@ const styles = StyleSheet.create({
   },
   bottomTitle: {
     color: '#fff',
-    fontSize: 40, // Increased size
+    fontSize: 40,
     fontWeight: 'bold',
     marginBottom: 6,
   },
