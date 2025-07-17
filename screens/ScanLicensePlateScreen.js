@@ -1,19 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-  Alert,
-  Dimensions,
-  Linking,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, Dimensions, Linking } from 'react-native';
 import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
-import axios from 'axios';
+import Tflite from 'react-native-tflite';
+import TextRecognition from '@react-native-ml-kit/text-recognition';
+import ImageEditor from "@react-native-community/image-editor";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+const tflite = new Tflite();
 
 const ScanLicensePlateScreen = () => {
   const navigation = useNavigation();
@@ -25,129 +19,70 @@ const ScanLicensePlateScreen = () => {
 
   useEffect(() => {
     if (!hasPermission) {
-      requestPermission().then((granted) => {
-        if (!granted) {
-          Alert.alert(
-            'Camera Permission Required',
-            'Please enable camera access in settings to use this feature.',
-            [
-              { text: 'Cancel', style: 'cancel' },
-              { text: 'Open Settings', onPress: () => Linking.openSettings() },
-            ]
-          );
-        }
-      });
+      requestPermission();
     }
+    tflite.loadModel({
+      model: 'anpr2_yolov9_int8.tflite',
+      labels: '', // not needed for object detection
+    }, (err) => { if (err) console.error('TFLite load error', err); });
   }, [hasPermission]);
 
+  const cropImageToBBox = async (uri, bbox) => {
+    const cropData = {
+      offset: { x: bbox.x * bbox.imageWidth, y: bbox.y * bbox.imageHeight },
+      size: { width: bbox.w * bbox.imageWidth, height: bbox.h * bbox.imageHeight },
+    };
+    return await ImageEditor.cropImage(uri, cropData);
+  };
+
   const capturePhoto = async () => {
-    if (camera.current && !isProcessing) {
-      setIsProcessing(true);
-      try {
-        const photo = await camera.current.takePhoto();
+    if (!camera.current || isProcessing) return;
+    setIsProcessing(true);
+    try {
+      const photo = await camera.current.takePhoto({ skipMetadata: true });
+      const uri = `file://${photo.path}`;
 
-        const formData = new FormData();
-        formData.append('file', {
-          uri: `file://${photo.path}`,
-          name: 'plate.jpg',
-          type: 'image/jpeg',
-        });
-
-        const response = await axios.post(
-         'http://192.168.150.239:5000/recognize', 
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
-        );
-
-        const { plate } = response.data;
-        console.log('Recognized Plate:', plate);
-
-        if (plate && plate !== 'UNKNOWN') {
-          navigation.navigate('AddCar', { licensePlate: plate });
-        } else {
-          Alert.alert('No Plate Found', 'Try again with better focus or lighting.');
+      //  Run object detection
+      tflite.detectObjectOnImage({
+        path: uri,
+        threshold: 0.5,
+        numResults: 1,
+      }, async (err, res) => {
+        if (err || !res?.length) {
+          Alert.alert('Detection Failed', 'Could not detect a number plate.');
+          setIsProcessing(false);
+          return;
         }
-      } catch (error) {
-        console.error('Error uploading photo:', error);
-        Alert.alert('Error', 'Failed to process the image.');
-      } finally {
+
+        const obj = res[0];
+        const { rect, imageWidth, imageHeight } = obj;
+        const cropUri = await cropImageToBBox(uri, { ...rect, imageWidth, imageHeight });
+
+        //  OCR on cropped image
+        const ocrResult = await TextRecognition.recognize(cropUri);
+        const text = ocrResult.text?.replace(/\s+/g, '');
+
+        if (text) navigation.navigate('AddCar', { licensePlate: text });
+        else Alert.alert('OCR Failed', 'Could not read plate text.');
         setIsProcessing(false);
-      }
+      });
+    } catch (e) {
+      console.error(e);
+      Alert.alert('Error', 'Something went wrong.');
+      setIsProcessing(false);
     }
   };
 
-  if (!hasPermission) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#3b82f6" />
-        <Text style={styles.loadingText}>Requesting camera permission...</Text>
-      </View>
-    );
-  }
-
-  if (!device) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>
-          No camera device available. Please ensure your device has a back camera or try again.
-        </Text>
-        <TouchableOpacity
-          style={styles.retryButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.retryText}>Go Back</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
+  if (!hasPermission) return <View style={styles.container}><ActivityIndicator /><Text style={styles.loadingText}>Camera permission needed</Text></View>;
+  if (!device) return <View style={styles.container}><Text style={styles.loadingText}>No camera found</Text></View>;
 
   return (
     <View style={styles.container}>
-      <Camera
-        ref={camera}
-        style={StyleSheet.absoluteFill}
-        device={device}
-        isActive={isFocused}
-        photo={true}
-        onInitialized={() => console.log('Camera initialized')}
-        onError={(error) => {
-          console.error('Camera error:', error);
-          Alert.alert('Camera Error', error.message);
-        }}
-      />
-
-      <TouchableOpacity
-        style={styles.closeButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Text style={styles.closeText}>✕</Text>
-      </TouchableOpacity>
-
+      <Camera ref={camera} style={StyleSheet.absoluteFill} device={device} isActive={isFocused} photo={true} />
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeButton}><Text style={styles.closeText}>✕</Text></TouchableOpacity>
       <View style={styles.bottomContainer}>
-        <View style={styles.textWrapper}>
-          <Text style={styles.bottomTitle}>Scan License Plate</Text>
-          <Text style={styles.bottomSubtitle}>Position license plate in frame</Text>
-        </View>
-
-        <TouchableOpacity
-          style={[styles.captureButton, isProcessing && styles.disabledButton]}
-          onPress={capturePhoto}
-          disabled={isProcessing}
-        >
-          <Text style={styles.captureText}>
-            {isProcessing ? 'Processing...' : 'Capture'}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.manualEntry}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.manualText}>Enter License Plate Manually</Text>
+        <TouchableOpacity disabled={isProcessing} onPress={capturePhoto} style={[styles.captureButton, isProcessing && styles.disabled]} >
+          <Text style={styles.captureText}>{isProcessing ? 'Processing...' : 'Capture'}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -155,93 +90,14 @@ const ScanLicensePlateScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
-  loadingText: {
-    color: '#fff',
-    marginTop: 12,
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  errorText: {
-    color: '#fff',
-    fontSize: 16,
-    textAlign: 'center',
-    marginHorizontal: 20,
-  },
-  retryButton: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: '#3b82f6',
-    borderRadius: 5,
-  },
-  retryText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 80,
-    left: 20,
-    zIndex: 10,
-  },
-  closeText: {
-    fontSize: 28,
-    color: '#fff',
-  },
-  bottomContainer: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    height: SCREEN_HEIGHT * 0.4,
-    backgroundColor: '#000',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingTop: 30,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  textWrapper: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  bottomTitle: {
-    color: '#fff',
-    fontSize: 40,
-    fontWeight: 'bold',
-    marginBottom: 6,
-  },
-  bottomSubtitle: {
-    color: '#fff',
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  captureButton: {
-    backgroundColor: '#3b82f6',
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  disabledButton: {
-    backgroundColor: '#666',
-  },
-  captureText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  manualEntry: {
-    position: 'absolute',
-    bottom: 25,
-  },
-  manualText: {
-    color: '#3b82f6',
-    fontSize: 16,
-    textDecorationLine: 'underline',
-  },
+  container: { flex: 1, backgroundColor: '#000' },
+  loadingText: { color: '#fff', marginTop: 20, textAlign: 'center' },
+  closeButton: { position: 'absolute', top: 40, left: 20, zIndex: 10 },
+  closeText: { fontSize: 28, color: '#fff' },
+  bottomContainer: { position: 'absolute', bottom: 50, width: '100%', alignItems: 'center' },
+  captureButton: { backgroundColor: '#3b82f6', padding: 20, borderRadius: 40 },
+  disabled: { backgroundColor: '#555' },
+  captureText: { fontSize: 16, color: '#fff', fontWeight: '600' },
 });
 
 export default ScanLicensePlateScreen;

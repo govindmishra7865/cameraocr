@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-community/image-editor": "^4.3.0",
     "@react-native-ml-kit/text-recognition": "^1.5.2",
     "@react-native/new-app-screen": "0.80.0",
     "@react-navigation/native": "^7.1.14",
@@ -18,11 +19,13 @@
     "react": "19.1.0",
     "react-native": "0.80.0",
     "react-native-gesture-handler": "^2.27.1",
+    "react-native-image-editor": "^0.0.1",
     "react-native-pressable-opacity": "^1.0.10",
     "react-native-reanimated": "^3.18.0",
     "react-native-safe-area-context": "^5.5.1",
     "react-native-screens": "^4.11.1",
     "react-native-svg": "^15.12.0",
+    "react-native-tflite": "^0.0.2",
     "react-native-vector-icons": "^10.2.0",
     "react-native-vision-camera": "^4.7.0",
     "react-native-worklets-core": "^1.6.0"
